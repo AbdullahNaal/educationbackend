@@ -1,6 +1,10 @@
+using EducationPlatformBackend;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
+
+DatabaseHelper.InitializeDatabase();
 
 var app = builder.Build();
 
@@ -11,28 +15,35 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
+app.MapPost("/create-account", (string Name) =>
 {
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
+    string guid = Guid.NewGuid().ToString();
+    DatabaseHelper.CreateAccount(guid, Name);
+    return guid;
+});
 
-app.MapGet("/weatherforecast", () =>
-    {
-        var forecast = Enumerable.Range(1, 5).Select(index =>
-                new WeatherForecast
-                (
-                    DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-                    Random.Shared.Next(-20, 55),
-                    summaries[Random.Shared.Next(summaries.Length)]
-                ))
-            .ToArray();
-        return forecast;
-    })
-    .WithName("GetWeatherForecast");
+app.MapPut("/attach-device", (string deviceId, string guid) =>
+{
+    if (DatabaseHelper.AttachDevice(guid, deviceId))
+        return Results.Ok();
+    return Results.Forbid();
+});
+
+app.MapPut("/detach-device", (string guid) =>
+{
+    DatabaseHelper.DetachDevice(guid);
+    return Results.Ok();
+});
+
+app.MapPost("/add-purchase", (string guid, string purchaseItemId) =>
+{
+    DatabaseHelper.AddPurchase(guid, purchaseItemId);
+    return Results.Ok();
+});
+
+app.MapGet("/purchases", (string deviceId) =>
+{
+    return DatabaseHelper.GetPurchasesByDevice(deviceId);
+});
 
 app.Run();
-
-record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
