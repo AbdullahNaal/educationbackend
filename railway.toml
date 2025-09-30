@@ -1,5 +1,5 @@
 [build]
-builder = "DOTNET"
+builder = "nixpacks"
 
 [deploy]
 startCommand = "./EducationPlatformBackend"
