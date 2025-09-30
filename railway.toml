@@ -1,5 +1,2 @@
 [build]
-builder = "nixpacks"
-
-[deploy]
-startCommand = "./EducationPlatformBackend"
+builder = "dockerfile"
