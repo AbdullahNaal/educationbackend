@@ -54,4 +54,9 @@ app.MapGet("/purchases", (string deviceId) =>
     return DatabaseHelper.GetPurchasesByDevice(deviceId);
 });
 
+app.MapGet("/accounts", () =>
+{
+    return DatabaseHelper.GetAllAccounts();
+});
+
 app.Run(url);

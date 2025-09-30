@@ -4,9 +4,8 @@ using Dapper;
 
 namespace EducationPlatformBackend;
 
-/** The following two records have no reason to exist other than to give an idea how the two tables in
-the database are structured; and they will come in handy if you need to read rows from those tables */
 public record Account(string Guid, string Name, string? DeviceId);
+// The following record is not being used yet; it would be used like the one above it
 public record Purchase(string Guid, string ItemId);
 public static class DatabaseHelper
 {
@@ -96,5 +95,12 @@ public static class DatabaseHelper
         return connection.Query<string>(
             "SELECT ItemId FROM Purchases WHERE Guid = @Guid",
             new { Guid = guid }).ToList();
+    }
+    public static List<Account> GetAllAccounts()
+    {
+        using var connection = GetConnection();
+        return connection.Query<Account>(
+            "SELECT Guid, Name, DeviceId FROM Accounts"
+        ).ToList();
     }
 }
