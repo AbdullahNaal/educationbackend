@@ -1,9 +1,14 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
-COPY *.csproj .
-RUN dotnet restore
-COPY . .
-RUN dotnet publish -c release -o /app
+
+# Copy project file from subdirectory
+COPY EducationPlatformBackend/*.csproj EducationPlatformBackend/
+RUN dotnet restore EducationPlatformBackend/EducationPlatformBackend.csproj
+
+# Copy everything else
+COPY EducationPlatformBackend/ EducationPlatformBackend/
+WORKDIR /src/EducationPlatformBackend
+RUN dotnet publish -c Release -o /app
 
 FROM mcr.microsoft.com/dotnet/aspnet:9.0
 WORKDIR /app
