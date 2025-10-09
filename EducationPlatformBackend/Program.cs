@@ -23,7 +23,12 @@ app.UseAuthorization();
 
 app.MapGet("/", () => "API is running!");
 
-app.MapPost("/create-account", (string Name) =>
+app.MapGet("/accounts", () =>
+{
+    return DatabaseHelper.GetAllAccounts();
+});
+
+app.MapPost("/accounts", (string Name) =>
 {
     string guid = Guid.NewGuid().ToString();
     DatabaseHelper.CreateAccount(guid, Name);
@@ -43,7 +48,7 @@ app.MapPut("/detach-device", (string guid) =>
     return Results.Ok();
 });
 
-app.MapPost("/add-purchase", (string guid, string purchaseItemId) =>
+app.MapPost("/purchases", (string guid, string purchaseItemId) =>
 {
     DatabaseHelper.AddPurchase(guid, purchaseItemId);
     return Results.Ok();
@@ -52,11 +57,6 @@ app.MapPost("/add-purchase", (string guid, string purchaseItemId) =>
 app.MapGet("/purchases", (string deviceId) =>
 {
     return DatabaseHelper.GetPurchasesByDevice(deviceId);
-});
-
-app.MapGet("/accounts", () =>
-{
-    return DatabaseHelper.GetAllAccounts();
 });
 
 app.Run(url);
