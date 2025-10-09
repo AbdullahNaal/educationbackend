@@ -48,17 +48,12 @@ public static class DatabaseHelper
     public static bool AttachDevice(string guid, string deviceId)
     {
         using var connection = GetConnection();
-        var existingDevice = connection.QueryFirstOrDefault<string>(
-            "SELECT DeviceId FROM Accounts WHERE Guid = @Guid",
-            new { Guid = guid });
     
-        if (existingDevice != null)
-            return false;
-    
-        connection.Execute(
-            "UPDATE Accounts SET DeviceId = @DeviceId WHERE Guid = @Guid",
+        var rowsAffected = connection.Execute(
+            "UPDATE Accounts SET DeviceId = @DeviceId WHERE Guid = @Guid AND DeviceId IS NULL",
             new { DeviceId = deviceId, Guid = guid });
-        return true;
+    
+        return rowsAffected > 0;
     }
     
     public static void DetachDevice(string guid)
